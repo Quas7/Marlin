@@ -417,7 +417,7 @@
  *   998 : Dummy Table that ALWAYS reads 25°C or the temperature defined below.
  *   999 : Dummy Table that ALWAYS reads 100°C or the temperature defined below.
  */
-#define TEMP_SENSOR_0 20  //ADC reference is 3V3 and supply is 3V3... therefore lookup-table of '20' is fine; '21' has a bug!
+#define TEMP_SENSOR_0 21  //ADC reference is 3V3 and INA opamp supply is 5V
 #define TEMP_SENSOR_1 0
 #define TEMP_SENSOR_2 0
 #define TEMP_SENSOR_3 0
@@ -479,7 +479,7 @@
 // Comment the following line to disable PID and enable bang-bang.
 #define PIDTEMP
 #define BANG_MAX 255     // Limits current to nozzle while in bang-bang mode; 255=full current
-#define PID_MAX 240 // Limits current to nozzle while PID is active (see PID_FUNCTIONAL_RANGE below); 255=full current
+#define PID_MAX 230 // Limits current to nozzle while PID is active (see PID_FUNCTIONAL_RANGE below); 255=full current
 #define PID_K1 0.95      // Smoothing factor within any PID loop
 
 #if ENABLED(PIDTEMP)
@@ -491,9 +491,9 @@
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
 
 //FINAL: K1 = 0.98, PID_MAX = 165 : almost steady with +/-1K while printing with fan - very sensible to Ki - 100% Sunon-Fan <d2K swings
-  #define  DEFAULT_Kp 9.2
-  #define  DEFAULT_Ki 0.44
-  #define  DEFAULT_Kd 48
+  #define  DEFAULT_Kp 20
+  #define  DEFAULT_Ki 1.1
+  #define  DEFAULT_Kd 89
 
   // Ultimaker
   //#define DEFAULT_Kp 22.2
@@ -694,8 +694,9 @@
 #define Y_DRIVER_TYPE  TMC2209
 #define Z_DRIVER_TYPE  TMC2209
 //#define E0_DRIVER_TYPE TMC2209
-#define E0_DRIVER_TYPE A4988
+#define E0_DRIVER_TYPE TB6600
 #define E1_DRIVER_TYPE TMC2209
+//#define E1_DRIVER_TYPE TB6600
 
 //#define X_DRIVER_TYPE  A4988
 //#define Y_DRIVER_TYPE  A4988
@@ -761,18 +762,18 @@
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
 //#define DEFAULT_AXIS_STEPS_PER_UNIT   { 160, 160, 800, 796 }  
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 160, 160, 800, 1592 }  
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 160, 160, 800, 1030 }  
 
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 400, 400, 7, 25 }
+#define DEFAULT_MAX_FEEDRATE          { 300, 300, 6, 50 }
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
-  #define MAX_FEEDRATE_EDIT_VALUES    { 800, 800, 10, 50 } // ...or, set your own edit limits
+  #define MAX_FEEDRATE_EDIT_VALUES    { 800, 800, 10, 70 } // ...or, set your own edit limits
 #endif
 
 /**
@@ -781,11 +782,11 @@
  * Override with M201
  *                                      X, Y, Z, E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 100, 10000 }
+#define DEFAULT_MAX_ACCELERATION      { 3000, 3000, 400, 6000 }
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
-  #define MAX_ACCEL_EDIT_VALUES       { 5000, 5000, 200, 15000 } // ...or, set your own edit limits
+  #define MAX_ACCEL_EDIT_VALUES       { 5000, 5000, 600, 8000 } // ...or, set your own edit limits
 #endif
 
 /**
@@ -796,9 +797,9 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          3000    // X, Y, Z and E acceleration for printing moves
-#define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   3000    // X, Y, Z acceleration for travel (non printing) moves
+#define DEFAULT_ACCELERATION          800    // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_RETRACT_ACCELERATION  2200    // E acceleration for retracts
+#define DEFAULT_TRAVEL_ACCELERATION   1000    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
  * Default Jerk limits (mm/s)
@@ -810,8 +811,8 @@
  */
 //#define CLASSIC_JERK
 #if ENABLED(CLASSIC_JERK)
-  #define DEFAULT_XJERK 10.0
-  #define DEFAULT_YJERK 10.0
+  #define DEFAULT_XJERK  8.0
+  #define DEFAULT_YJERK  8.0
   #define DEFAULT_ZJERK  0.3
 
   //#define TRAVEL_EXTRA_XYJERK 0.0     // Additional jerk allowance for all travel moves
@@ -1007,14 +1008,14 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { +20, +100, -2.3 }
+#define NOZZLE_TO_PROBE_OFFSET { +20, +100, -0.5 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 10
+#define PROBING_MARGIN 20
 
 // X and Y axis travel speed (mm/min) between probes
-#define XY_PROBE_SPEED 120*60
+#define XY_PROBE_SPEED 160*60
 
 // Feedrate (mm/min) for the first approach when double-probing (MULTIPLE_PROBING == 2)
 #define Z_PROBE_SPEED_FAST HOMING_FEEDRATE_Z
@@ -1303,7 +1304,7 @@
 
   // Set the number of grid points per dimension.
   #define GRID_MAX_POINTS_X 3
-  #define GRID_MAX_POINTS_Y 4
+  #define GRID_MAX_POINTS_Y 3
 
   // Probe along the Y axis, advancing X after each column
   //#define PROBE_Y_FIRST
@@ -1318,7 +1319,7 @@
     // Experimental Subdivision of the grid by Catmull-Rom method.
     // Synthesizes intermediate points to produce a more detailed mesh.
     //
-    #define ABL_BILINEAR_SUBDIVISION
+    //#define ABL_BILINEAR_SUBDIVISION
     #if ENABLED(ABL_BILINEAR_SUBDIVISION)
       // Number of subdivisions between probe points
       #define BILINEAR_SUBDIVISIONS 3
@@ -1334,7 +1335,7 @@
 
   //#define MESH_EDIT_GFX_OVERLAY   // Display a graphics overlay while editing the mesh
 
-  #define MESH_INSET 10              // Set Mesh bounds as an inset region of the bed
+  #define MESH_INSET 20              // Set Mesh bounds as an inset region of the bed
   #define GRID_MAX_POINTS_X 10      // Don't use more than 15 points per axis, implementation limited.
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
@@ -1350,7 +1351,7 @@
   //=================================== Mesh ==================================
   //===========================================================================
 
-  #define MESH_INSET 10          // Set Mesh bounds as an inset region of the bed
+  #define MESH_INSET 20          // Set Mesh bounds as an inset region of the bed
   #define GRID_MAX_POINTS_X 3    // Don't use more than 7 points per axis, implementation limited.
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
@@ -1385,7 +1386,7 @@
  * Useful to retract or move the Z probe out of the way.
  */
 #define Z_PROBE_END_SCRIPT "G1 Z15 F1200"
-//#define Z_PROBE_END_SCRIPT "G1 Z10 F12000\nG1 X15 Y330\nG1 Z0.5\nG1 Z10"
+//#define Z_PROBE_END_SCRIPT "G1 Z10 F1200\nG1 X15 Y330\nG1 Z0.5\nG1 Z10"
 
 // @section homing
 
@@ -2297,8 +2298,9 @@
 // :[1,2,3,4,5,6,7,8]
 //#define NUM_M106_FANS 1
 
-// Increase the FAN PWM frequency. Removes the PWM noise but increases heating in the FET/Arduino
-//#define FAST_PWM_FAN
+// Increase the FAN PWM frequency. Removes the PWM noise but increases heating in the FET/Arduino.
+// On high speed CPUs restrict to <30kHz via #define FAST_PWM_FAN_FREQUENCY 30000 in Configuration_adv.h to avoid electromagnetic interference and serial communication issues
+#define FAST_PWM_FAN
 
 // Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
 // which is not as annoying as with the hardware PWM. On the other hand, if this frequency
